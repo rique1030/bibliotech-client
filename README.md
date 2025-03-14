@@ -1,50 +1,41 @@
-# Welcome to your Expo app 👋
+# BiblioTech Catalog 📚  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![GitHub release](https://img.shields.io/github/v/release/riquelicious/BiblioTechMobileClient?style=flat-square)  
+![GitHub license](https://img.shields.io/github/license/riquelicious/BiblioTechMobileClient?style=flat-square)  
+![GitHub issues](https://img.shields.io/github/issues/riquelicious/BiblioTechMobileClient?style=flat-square)  
+![GitHub last commit](https://img.shields.io/github/last-commit/riquelicious/BiblioTechMobileClient?style=flat-square)  
 
-## Get started
+BiblioTech Catalog is a mobile application that allows users to search, borrow, and return books using QR codes. It also provides real-time notifications for book availability and due dates.  
 
-1. Install dependencies
+## 📌 Features  
+- 🔍 **Search & Filter** – Find books by title, author, or category  
+- 📖 **Book Details** – View descriptions, availability, and borrowing history  
+- 📷 **QR Code Scanning** – Quickly borrow and return books  
+- 🔔 **Push Notifications** – Stay updated on due dates and book availability  
+- 📱 **User-Friendly Interface** – Optimized for mobile devices  
 
-   ```bash
-   npm install
-   ```
+## 📥 Installation  
+1. Download the latest **APK** from the [Releases](https://github.com/riquelicious/BiblioTechMobileClient/releases) page.  
+2. Install the APK on your Android device.  
+3. Open the app and start exploring the library catalog.  
 
-2. Start the app
+## 🚀 Usage  
+1. **Search** – Enter keywords to find books.  
+2. **Borrow** – Scan a book's QR code to borrow it.  
+3. **Return** – Use the QR scanner to return a borrowed book.  
+4. **Notifications** – Get alerts for due dates and book availability.  
 
-   ```bash
-    npx expo start
-   ```
+## 🛠 Tech Stack  
+- **Frontend:** React Native (Expo)  
+- **Backend:** Node.js (Express) with MySQL  
+- **State Management:** React Query  
+- **Authentication:** JWT  
 
-In the output, you'll find options to open the app in a
+## 🤝 Contributing  
+Contributions are welcome! If you’d like to report an issue or suggest a feature, please open an [issue](https://github.com/riquelicious/BiblioTechMobileClient/issues).  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📄 License  
+This project is licensed under the **MIT License**.  
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
