@@ -1,6 +1,7 @@
-import useRequest from "@/api/request";
-import CONFIG from "@/config";
-import { convertCover, convertProfile } from "@/helper/imageUrl";
+import useRequest, { getURL } from "@/api/request";
+import CustomHeader from "@/components/default/header/customheader";
+import { convertCover } from "@/helper/imageUrl";
+import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useEffect, useState } from "react";
 import { View, Image, ScrollView } from "react-native";
@@ -9,7 +10,7 @@ import { useQuery } from "react-query";
 
 async function fetchBookByID(bookPayload: any) {
 	const payload = {
-		url: CONFIG.URL.CATALOG.GET_BOOKS_BY_ID,
+		url: (await getURL()).API.BOOKS.GET_BY_ID,
 		method: "POST" as const,
 		payload: bookPayload,
 	};
@@ -18,7 +19,7 @@ async function fetchBookByID(bookPayload: any) {
 
 async function fetchCategoryByID(categoryPayload: any) {
 	const payload = {
-		url: CONFIG.URL.CATEGORY.GET_CATEGORIES_BY_ID,
+		url: (await getURL()).API.CATEGORIES.GET_BY_ID,
 		method: "POST" as const,
 		payload: categoryPayload,
 	};
@@ -27,7 +28,7 @@ async function fetchCategoryByID(categoryPayload: any) {
 
 async function fetchCopyByCatalogID(copyPayload: any) {
 	const payload = {
-		url: CONFIG.URL.COPY.GET_COPIES_BY_CATALOG_ID,
+		url: (await getURL()).API.COPIES.GET_BY_CATALOG,
 		method: "POST" as const,
 		payload: copyPayload,
 	};
@@ -37,12 +38,13 @@ async function fetchCopyByCatalogID(copyPayload: any) {
 export default function Index() {
 	const theme = useTheme();
 	const params = useSearchParams();
+	const router = useRouter();
 	const id = params.get("id") as string;
 	const [book, setBook] = useState<any>({});
 	const [categoryIDs, setCategoryIDs] = useState<string[]>([]);
 	const [categories, setCategories] = useState<any>([]);
 	const [copies, setCopies] = useState<any>([]);
-
+	const [bookCover, setBookCover] = useState<string>("");
 	const { data: book_data, refetch: refetch_book } = useQuery({
 		queryKey: ["books", [id]],
 		queryFn: () => {
@@ -75,6 +77,7 @@ export default function Index() {
 
 	useEffect(() => {
 		refetch_book();
+		convertCover(book?.cover_image).then((res) => setBookCover(res));
 	}, []);
 
 	useEffect(() => {
@@ -89,44 +92,49 @@ export default function Index() {
 	}, [category_data]);
 
 	useEffect(() => {
-		console.log(copy_data);
 		if (copy_data?.data) setCopies(copy_data?.data);
 	}, [copy_data]);
 
 	return (
-		<ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
-			<View style={{ alignItems: "center", paddingBottom: 80, height: "100%" }}>
-				<Image
-					source={
-						book?.cover_image === "default"
-							? require("@/assets/images/default/book_cover.png")
-							: { uri: convertCover(book?.cover_image) }
-					}
-					style={{
-						width: 150,
-						height: 220,
-						borderRadius: 10,
-						marginVertical: 20,
-					}}
-				/>
-				<View style={{ width: "100%", paddingHorizontal: 20 }}>
-					<Text
-						variant="headlineMedium"
-						style={{ textAlign: "center", fontWeight: "bold" }}>
-						{book?.title}
-					</Text>
-					<Text
-						variant="titleMedium"
-						style={{ textAlign: "center", paddingVertical: 10 }}>
-						{book?.author}
-					</Text>
-					<SecondaryDetails book={book} />
-					<DescriptionPanel book={book} />
-					<CategoryPanel categories={categories} />
-					<CopyPanel copies={copies} />
+		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+			<CustomHeader back onClick={() => router.back()} />
+			<ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+				<View
+					style={{ alignItems: "center", paddingBottom: 80, height: "100%" }}>
+					<Image
+						source={
+							book?.cover_image === "default" ||
+							book?.cover_image === "" ||
+							!book?.cover_image
+								? require("@/assets/images/default/book_cover.png")
+								: { uri: bookCover }
+						}
+						style={{
+							width: 150,
+							height: 220,
+							borderRadius: 10,
+							marginVertical: 20,
+						}}
+					/>
+					<View style={{ width: "100%", paddingHorizontal: 20 }}>
+						<Text
+							variant="headlineMedium"
+							style={{ textAlign: "center", fontWeight: "bold" }}>
+							{book?.title || "Title"}
+						</Text>
+						<Text
+							variant="titleMedium"
+							style={{ textAlign: "center", paddingVertical: 10 }}>
+							{book?.author || "Author"}
+						</Text>
+						<SecondaryDetails book={book} />
+						<DescriptionPanel book={book} />
+						<CategoryPanel categories={categories} />
+						<CopyPanel copies={copies} />
+					</View>
 				</View>
-			</View>
-		</ScrollView>
+			</ScrollView>
+		</View>
 	);
 }
 
@@ -195,10 +203,10 @@ function SecondaryDetails({ book }: { book: any }) {
 			</Text>
 			<View style={{ paddingVertical: 10, paddingLeft: 10 }}>
 				<Text variant="bodyMedium" style={{ opacity: 0.5 }}>
-					{`Publisher: ${book?.publisher}`}
+					{`Publisher: ${book?.publisher || "N/A"}`}
 				</Text>
 				<Text variant="bodyMedium" style={{ opacity: 0.5 }}>
-					{`Call Number: ${book?.call_number}`}
+					{`Call Number: ${book?.call_number || "N/A"}`}
 				</Text>
 			</View>
 		</>
@@ -219,7 +227,7 @@ function DescriptionPanel({ book }: { book: any }) {
 			</Text>
 			<View style={{ paddingVertical: 10, paddingLeft: 10 }}>
 				<Text variant="bodyMedium" style={{ opacity: 0.5 }}>
-					{book?.description}
+					{book?.description || "No description"}
 				</Text>
 			</View>
 		</>

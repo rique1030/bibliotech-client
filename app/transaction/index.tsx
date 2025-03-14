@@ -28,7 +28,7 @@ export default function Index() {
 			<View
 				style={[
 					styles.mainWindow,
-					{ backgroundColor: "rgba(0, 0, 0, 0.1)", gap: 20 },
+					{ backgroundColor: "rgba(0, 0, 0, 0.05)", gap: 20 },
 				]}>
 				<TouchableOpacity
 					onPress={() =>

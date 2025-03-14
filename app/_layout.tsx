@@ -1,13 +1,11 @@
 import useCustomTheme from "@/hooks/useCustomTheme";
 import useToast, { GlobalToast, Toast } from "@/hooks/useToast";
 import { useFonts } from "expo-font";
-import { Slot } from "expo-router";
-import React, { useContext, useEffect, useMemo } from "react";
-import { View } from "react-native";
+import React, { useEffect, useMemo } from "react";
+import { useColorScheme, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
 	configureFonts,
-	Drawer,
 	Icon,
 	PaperProvider,
 	useTheme,
@@ -19,6 +17,8 @@ import {
 	DrawerItem,
 	DrawerItemList,
 } from "@react-navigation/drawer";
+
+
 import { StatusBar } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
@@ -34,13 +34,19 @@ export const queryClient = new QueryClient({
 	},
 });
 
-export default function RootLayout() {
+export default function RootLayout() { 
 	const { theme } = useCustomTheme();
+	const colorScheme = useColorScheme();
 	const toastState = useToast();
+	
 
 	useEffect(() => {
-		NavigationBar.setVisibilityAsync("hidden");
+		NavigationBar.setVisibilityAsync("visible");
 	}, []);
+
+	useEffect(() => {
+		NavigationBar.setBackgroundColorAsync(theme.colors.background);
+	}, [theme.colors.background]);
 
 	const [loaded] = useFonts({
 		InriaSans: require("@/assets/fonts/InriaSans-Regular.ttf"),
@@ -86,95 +92,23 @@ export default function RootLayout() {
 			...customVariants,
 		},
 	});
-
 	if (!loaded) return null;
+	
 	return (
 		<GestureHandlerRootView>
-			<StatusBar hidden />
 			<QueryClientProvider client={queryClient}>
-				<AuthProvider>
-					<PaperProvider theme={{ ...theme, fonts }}>
-						<GlobalToast.Provider value={{ ...contextValue }}>
+				<GlobalToast.Provider value={{ ...contextValue }}>
+					<AuthProvider>
+						<PaperProvider theme={{ ...theme, fonts }}>
+							<StatusBar translucent={false} style={colorScheme === "dark"? "light" : "dark"} backgroundColor={theme.colors.background} />
 							<View
 								style={{ flex: 1, backgroundColor: theme.colors.background }}>
-								<ExpoDrawer
-									initialRouteName="index"
-									drawerContent={CustomDrawerContent}
-									screenOptions={{
-										headerShown: false,
-										drawerActiveTintColor: theme.colors.primary,
-										drawerInactiveTintColor: "gray",
-										drawerStyle: {
-											backgroundColor: theme.colors.background,
-											paddingTop: 50,
-										},
-									}}>
-									<ExpoDrawer.Screen
-										name="browser"
-										options={{
-											headerShown: false,
-											title: "Search",
-											drawerIcon: ({ color, size }) => (
-												<Icon source={"magnify"} color={color} size={24} />
-											),
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="index"
-										options={{
-											drawerItemStyle: { display: "none" }, // ✅ Hide from the drawer
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="auth"
-										options={{
-											drawerItemStyle: { display: "none" }, // ✅ Hide from the drawer
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="book_profile"
-										options={{
-											drawerItemStyle: { display: "none" }, // ✅ Hide from the drawer
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="scan"
-										options={{
-											drawerItemStyle: { display: "none" }, // ✅ Hide from the drawer
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="request"
-										options={{
-											drawerItemStyle: { display: "none" }, // ✅ Hide from the drawer
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="transaction"
-										options={{
-											headerShown: false,
-											title: "Transactions",
-											drawerIcon: ({ color, size }) => (
-												<Icon source={"qrcode-scan"} color={color} size={24} />
-											),
-										}}
-									/>
-									<ExpoDrawer.Screen
-										name="profile"
-										options={{
-											headerShown: false,
-											title: "Profile",
-											drawerIcon: ({ color, size }) => (
-												<Icon source={"account-box"} color={color} size={24} />
-											),
-										}}
-									/>
-								</ExpoDrawer>
+								<CustomDrawer />
 								<Toast />
 							</View>
-						</GlobalToast.Provider>
-					</PaperProvider>
-				</AuthProvider>
+						</PaperProvider>
+					</AuthProvider>
+				</GlobalToast.Provider>
 			</QueryClientProvider>
 		</GestureHandlerRootView>
 	);
@@ -196,8 +130,8 @@ function CustomDrawerContent(props: any) {
 				)}
 				style={{
 					bottom: 16,
-					borderRadius: 56, // Adjust the value as needed
-					marginHorizontal: 10, // Optional: add some horizontal margin if required
+					borderRadius: 56,
+					marginHorizontal: 10,
 					overflow: "hidden",
 				}}
 				labelStyle={{
@@ -207,5 +141,88 @@ function CustomDrawerContent(props: any) {
 				onPress={logout}
 			/>
 		</View>
+	);
+}
+
+function CustomDrawer() {
+	const theme = useTheme();
+	return (
+		<>
+			<ExpoDrawer
+				initialRouteName="index"
+				backBehavior="history"
+				drawerContent={CustomDrawerContent}
+				screenOptions={{
+					headerShown: false,
+					drawerActiveTintColor: theme.colors.primary,
+					drawerInactiveTintColor: "gray",
+					drawerStyle: {
+						backgroundColor: theme.colors.background,
+						paddingTop: 50,
+					},
+				}}>
+				<ExpoDrawer.Screen
+					name="browser"
+					options={{
+						headerShown: false,
+						title: "Search",
+						drawerIcon: ({ color, size }) => (
+							<Icon source={"magnify"} color={color} size={24} />
+						),
+					}}
+				/>
+				<ExpoDrawer.Screen
+					name="transaction"
+					options={{
+						headerShown: false,
+						title: "Transactions",
+						drawerIcon: ({ color, size }) => (
+							<Icon source={"qrcode-scan"} color={color} size={24} />
+						),
+					}}
+				/>
+				<ExpoDrawer.Screen
+					name="profile"
+					options={{
+						headerShown: false,
+						title: "Profile",
+						drawerIcon: ({ color, size }) => (
+							<Icon source={"account-box"} color={color} size={24} />
+						),
+					}}
+				/>
+				{/* Disabled drawers*/}
+				<ExpoDrawer.Screen
+					name="index"
+					options={{
+						drawerItemStyle: { display: "none" },
+					}}
+				/>
+				<ExpoDrawer.Screen
+					name="request"
+					options={{
+						drawerItemStyle: { display: "none" },
+					}}
+				/>
+				<ExpoDrawer.Screen
+					name="auth"
+					options={{
+						drawerItemStyle: { display: "none" },
+					}}
+				/>
+				<ExpoDrawer.Screen
+					name="book_profile"
+					options={{
+						drawerItemStyle: { display: "none" },
+					}}
+				/>
+				<ExpoDrawer.Screen
+					name="scan"
+					options={{
+						drawerItemStyle: { display: "none" },
+					}}
+				/>
+			</ExpoDrawer>
+		</>
 	);
 }

@@ -1,19 +1,18 @@
-import useRequest from "@/api/request";
+import useRequest, { getURL } from "@/api/request";
 import CustomHeader from "@/components/default/header/customheader";
-import CONFIG from "@/config";
 import Alpha from "@/helper/alpha";
 import { useGlobalToast } from "@/hooks/useToast";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useEffect, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import { Text, Button, useTheme, Chip } from "react-native-paper";
 import { useQuery } from "react-query";
 
 async function getBookByAccessNumber(accessNumbers: string[]) {
 	return await useRequest({
-		url: CONFIG.URL.COPY.GET_COPIES_BY_ACCESS_NUMBER,
+		url: (await getURL()).API.COPIES.GET_BY_ACCESS,
 		method: "POST" as const,
 		payload: accessNumbers,
 	});
@@ -29,7 +28,6 @@ export default function Index() {
 	const [scanned, setScanned] = useState(false);
 	const [accessNumbers, setAccessNumbers] = useState<string[]>([]);
 	const { showToast } = useGlobalToast();
-
 	const { data: book_data } = useQuery({
 		queryKey: ["books", accessNumbers],
 		queryFn: () => getBookByAccessNumber(accessNumbers),
@@ -40,7 +38,6 @@ export default function Index() {
 	});
 
 	useEffect(() => {
-		setAccessNumbers([]);
 		if (!book_data) return;
 
 		if (book_data && book_data.success) {
@@ -98,19 +95,20 @@ export default function Index() {
 		setFacing((current) => (current === "front" ? "back" : "front"));
 	}
 	const handleBarcodeScan = (data: any) => {
-		if (scanned) return;
+	if (scanned) return;
 		setScanned(true);
 		setAccessNumbers([data.data]);
-		// router.push(`/request?transaction=${transaction}&data=${data.data}` as any);
-		setTimeout(() => setScanned(false), 2000);
+		setTimeout(() => handleResetScan(), 2000);
 	};
+
+	const handleResetScan = () => {
+		setAccessNumbers([]);
+		setScanned(false)
+	}
 
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-			<CustomHeader
-				back
-				onClick={() => router.replace("/transaction" as any)}
-			/>
+			<CustomHeader back onClick={() => router.back()} />
 			<CameraView
 				style={{
 					width: "100%",
@@ -134,6 +132,18 @@ export default function Index() {
 						borderRadius: 50,
 					}}>
 					{transaction.toUpperCase()}
+				</Chip>
+				<Chip
+					mode="outlined"
+					textStyle={{ color: theme.colors.primary }}
+					style={{
+						position: "absolute",
+						top: 70,
+						backgroundColor: Alpha(theme.colors.primary, 0.2),
+						borderColor: theme.colors.primary,
+						borderRadius: 50,
+					}}>
+					Scanned Value: {accessNumbers?.[0] || "NONE"}
 				</Chip>
 			</CameraView>
 		</View>

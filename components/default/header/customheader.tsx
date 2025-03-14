@@ -89,12 +89,12 @@ export default function CustomHeader({
 						mode="bar"
 						style={[
 							styles.Searchbar,
-							{ backgroundColor: Alpha(theme.colors.onSurface, 0.1) },
+							{ backgroundColor: Alpha(theme.colors.onBackground, 0.05) },
 						]}
 						iconColor="#5b40e4"
 						// @ts-ignore
 						clearIcon={false}
-						inputStyle={[styles.inputText, { color: theme.colors.onSurface }]}
+						inputStyle={[styles.inputText, { color: theme.colors.onBackground }]}
 						value={searchTerm}
 						onChangeText={setSearchTerm}
 					/>
@@ -120,7 +120,7 @@ export default function CustomHeader({
 											color:
 												filter.name.toLowerCase() === filterTerm.toLowerCase()
 													? "#5b40e4"
-													: theme.colors.onSurface,
+													: theme.colors.onBackground,
 										}}>
 										{filter.name}
 									</Text>

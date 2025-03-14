@@ -3,8 +3,7 @@ import * as SecureStore from "expo-secure-store";
 export const safeStore = async (key: string, value: any) => {
 	await SecureStore.setItemAsync(key, JSON.stringify(value));
 };
-
-export const safeFetch = async (key: string) => {
+export const safeFetch = async (key: string): Promise<any> => {
 	const item = await SecureStore.getItemAsync(key);
 	return item ? JSON.parse(item) : null;
 };

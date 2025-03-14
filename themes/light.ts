@@ -6,7 +6,7 @@ const lightTheme = {
 		background: "#e9e6f4",
 		primary: "#5b40e4",
 		onBackground: "#121212",
-		onSurface: "#121212",
+		// onSurface: "#121212",
 		outlineVariant: "#e9e6f4",
 	},
 };

@@ -1,5 +1,5 @@
 import { Slot } from "expo-router";
-import { View, Image } from "react-native";
+import { View, Image, ScrollView } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 
 const Logo = require("@/assets/images/default/Logo.png");
@@ -23,7 +23,7 @@ export default function RootLayout() {
 					height: "20%",
 				}}>
 				<Image source={Logo} style={styles.logo} />
-				<Text style={styles.logoLabel}>Bibliotech</Text>
+				<Text style={[styles.logoLabel, { color: theme.colors.onBackground }]}>Bibliotech</Text>
 			</View>
 			<View
 				style={{

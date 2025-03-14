@@ -1,8 +1,6 @@
 import { useAuth } from "@/providers/AuthProvider";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
-import { useTheme } from "react-native-paper";
+import { useTheme, ActivityIndicator } from "react-native-paper";
 
 export default function Index() {
 	const theme = useTheme();
@@ -20,6 +18,7 @@ export default function Index() {
 				source={require("@/assets/images/default/Logo.png")}
 				style={styles.logo}
 			/>
+			<ActivityIndicator style={{ padding: 50 }} size="large" color={theme.colors.primary} />
 		</View>
 	);
 }

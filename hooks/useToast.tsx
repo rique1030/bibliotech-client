@@ -9,7 +9,6 @@ export default function useToast() {
 	const [duration, setDuration] = useState(3000);
 
 	const showToast = (text: string, type: string, duration?: number) => {
-		console.info(text);
 		setText(text);
 		setType(type);
 		setToast(true);

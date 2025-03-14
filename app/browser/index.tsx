@@ -1,6 +1,7 @@
-import useRequest from "@/api/request";
+import useRequest, { getURL } from "@/api/request";
 import CustomHeader from "@/components/default/header/customheader";
-import CONFIG from "@/config";
+import Alpha from "@/helper/alpha";
+import { useNotification } from "@/hooks/useNotification";
 import { GlobalToast, useGlobalToast } from "@/hooks/useToast";
 import { useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
@@ -21,7 +22,7 @@ const PER_PAGE = 10;
 
 async function searchBooks(bookPayload: any) {
 	const payload = {
-		url: CONFIG.URL.CATALOG.GET_PAGED_BOOKS,
+		url: (await getURL()).API.RECORDS.BOOK_COUNTS,
 		method: "POST" as const,
 		payload: bookPayload,
 	};
@@ -38,6 +39,7 @@ export default function Index() {
 	const [page, setPage] = useState(0);
 	const [totalItems, setTotalItems] = useState(0);
 	const [warned, setWarned] = useState(false);
+	const _notif = useNotification();
 
 	const payload = {
 		page: page,
@@ -70,7 +72,7 @@ export default function Index() {
 	};
 
 	const handlePageRight = () => {
-		console.log(Math.ceil(totalItems / PER_PAGE));
+		// console.log(Math.ceil(totalItems / PER_PAGE));
 		if (page < Math.ceil(totalItems / PER_PAGE) - 1) setPage(page + 1);
 	};
 
@@ -98,11 +100,10 @@ export default function Index() {
 	useEffect(() => {
 		try {
 			if (data?.success) {
+				console.log(data?.data?.items?.[0]);
 				setBooks(data?.data?.items || []);
 				setTotalItems(data.data.total_count);
-				console.log(data.data);
 			} else {
-				console.log(data?.error);
 				if (warned) return;
 				switch (data?.error) {
 					case "ERR_NETWORK":
@@ -131,39 +132,61 @@ export default function Index() {
 	}, [searchTerm, filterTerm]);
 
 	return (
-		<View style={{ flex: 1 }}>
+		<View style={{ flex: 1, backgroundColor: theme.colors.background }}>
 			<CustomHeader
 				search={{ searchTerm, setSearchTerm }}
 				filter={{ filterTerm, setFilterTerm }}
 				order={{ order_direction, setOrderDirection }}
 			/>
-			<ScrollView
-				style={{
-					backgroundColor: "rgba(0,0,0,0.1)",
-					flex: 1,
-				}}>
+			{!loading && books.length === 0 ? (
 				<View
 					style={{
-						display: "flex",
-						flexDirection: "column",
-						gap: 10,
-						padding: 10,
+						alignItems: "center",
+						justifyContent: "center",
+						flex: 1,
+						backgroundColor: "rgba(0,0,0,0.05)",
 					}}>
-					{(loading || books.length === 0) && (
-						<View style={{ flex: 1, display: "flex", alignItems: "center" }}>
-							<ActivityIndicator color={theme.colors.primary} size="large" />
-						</View>
-					)}
-					{(!loading || books.length === 0) && (
-						<View
-							style={{ flex: 1, display: "flex", alignItems: "center" }}></View>
-					)}
-					{(!loading || books.length > 0) &&
-						books.map((book: any) => (
-							<BookComponent key={book.id} book={book} />
-						))}
+					<Text
+						style={{
+							fontSize: 30,
+							fontWeight: "bold",
+							color: Alpha(theme.colors.onBackground, 0.07),
+						}}>
+						No books found
+					</Text>
+					<Icon
+						source="book-search"
+						size={100}
+						color={Alpha(theme.colors.onBackground, 0.07)}
+					/>
 				</View>
-			</ScrollView>
+			) : (
+				<ScrollView
+					style={{
+						backgroundColor: "rgba(0,0,0,0.05)",
+						flex: 1,
+					}}>
+					<View
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							gap: 10,
+							padding: 10,
+						}}>
+						{loading && books.length === 0 && (
+							<View style={{ flex: 1, display: "flex", alignItems: "center" }}>
+								<ActivityIndicator color={theme.colors.primary} size="large" />
+							</View>
+						)}
+
+						{!loading &&
+							books.length > 0 &&
+							books.map((book: any) => (
+								<BookComponent key={book.id} book={book} />
+							))}
+					</View>
+				</ScrollView>
+			)}
 			<View
 				style={{
 					height: 60,
@@ -176,7 +199,7 @@ export default function Index() {
 				<IconButton
 					icon={() => (
 						<Icon
-							color={theme.colors.onSurface}
+							color={theme.colors.primary}
 							source="chevron-left"
 							size={30}
 						/>
@@ -197,7 +220,7 @@ export default function Index() {
 								color:
 									page === newpage
 										? theme.colors.primary
-										: theme.colors.onSurface,
+										: theme.colors.outline,
 							}}
 							style={{
 								width: 40,
@@ -209,7 +232,7 @@ export default function Index() {
 				<IconButton
 					icon={() => (
 						<Icon
-							color={theme.colors.onSurface}
+							color={theme.colors.primary}
 							source="chevron-right"
 							size={30}
 						/>
